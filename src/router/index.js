@@ -6,7 +6,7 @@ import RegisterView from '../views/users/RegisterView.vue'
 import PurchaseView from '../views/PurchaseView.vue'
 import SellView from '../views/SellingView.vue'
 import HistoryView from '../views/HistoryView.vue'
-// import CurrentStateView from '../views/CurrentStateView.vue'
+import CurrentStateView from '../views/CurrentStateView.vue'
 
 
 
@@ -51,7 +51,12 @@ const routes = [
     component: HistoryView,
     meta: { protectedView: true }
   },
-
+  {
+    path: '/current-state',
+    name: 'Current State',
+    component: CurrentStateView,
+    meta: { protectedView: true }
+  }
 ]
 
 const router = createRouter({
