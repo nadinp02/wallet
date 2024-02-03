@@ -7,6 +7,7 @@ import PurchaseView from '../views/PurchaseView.vue'
 import SellView from '../views/SellingView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import CurrentStateView from '../views/CurrentStateView.vue'
+import InvestmentView from '../views/InvestmentView.vue'
 
 
 
@@ -55,6 +56,12 @@ const routes = [
     path: '/current-state',
     name: 'Current State',
     component: CurrentStateView,
+    meta: { protectedView: true }
+  },
+  {
+    path: '/investment',
+    name: 'Investment Analysis',
+    component: InvestmentView,
     meta: { protectedView: true }
   }
 ]

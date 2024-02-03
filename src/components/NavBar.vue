@@ -20,6 +20,8 @@
             href="#">History</a></li></router-link>
             <router-link to="/current-state"><li class="nav-item"><a class="nav-link"
             href="#">Current State</a></li></router-link>
+            <router-link to="/investment"><li class="nav-item"><a class="nav-link"
+            href="#">Investment Analysis</a></li></router-link>
           </ul>
         </div>
         <div class="d-flex">
