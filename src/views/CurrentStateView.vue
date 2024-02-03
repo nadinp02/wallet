@@ -5,7 +5,7 @@
       <div class="row">
         <div class="col-sm-12 col-lg-6">
           <div class="text-center">
-            <h3 class="m-3">Your Total Balance: <b>${{ totalAmount.toFixed(2) }}</b></h3>
+            <h3 class="m-3">Current Funds: <b>${{ totalAmount.toFixed(2) }}</b></h3>
             <h4 v-for="crypto in cryptocurrencies" :key="crypto.code">
               {{ crypto.name }}: $<b>{{ crypto.money.toFixed(2) }}</b> - Amount: <b>{{ crypto.amount.toFixed(2) }}</b>
             </h4>
@@ -16,7 +16,7 @@
             <div class="card">
               <div class="card-body">
                 <div class="grid-item">
-                  <h4 class="text-center">Coins</h4>
+                  <h4 class="text-center">Cryptocurrencies</h4>
                   <div>
                     <canvas ref="chartCanvas" id="barChart" class="w-100 h-100"></canvas>
                   </div>
@@ -131,6 +131,7 @@ export default {
       options: {
         scales: {
           y: {
+            type: 'logarithmic',
             beginAtZero: true,
           },
         },
@@ -139,17 +140,17 @@ export default {
           legend: {
             display: false,
           },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const crypto = cryptocurrencies.value[context.dataIndex];
-                const label = context.datasetIndex === 0 ? 'Money' : 'Amount';
-                const moneyValue = crypto && crypto.money !== undefined ? `$${crypto.money.toFixed(2)}` : '$0.00';
-                const amountValue = crypto && crypto.amount !== undefined ? crypto.amount.toFixed(2) : '0.00';
-                return `${label}: ${moneyValue} - Amount: ${amountValue}`;
-              },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const crypto = cryptocurrencies.value[context.dataIndex];
+              const label = context.datasetIndex === 0 ? 'Money' : 'Amount';
+              const value = context.datasetIndex === 0 ? crypto.money : crypto.amount;
+              const formattedValue = value !== undefined ? `$${value.toFixed(2)}` : '$0.00';
+              return `${label}: ${formattedValue}`;
             },
           },
+        },
         },
       },
     });
