@@ -9,7 +9,7 @@
 
     <div v-else>
       <div class="container">
-        <table v-if="state.historial != null" class="table table-striped">
+        <table v-if="state.historial != null" class="table table-bordered table-hover">
           <thead>
             <tr>
               <th scope="col">Coin</th>
@@ -20,89 +20,78 @@
               <th scope="col">Actions</th>
             </tr>
           </thead>
+          <tbody>
+            <tr v-for="(item, index) in state.historial.slice().reverse()" :key="index">
+              <th scope="row">{{ item.crypto_code.toUpperCase() }}</th>
+              <td>{{ item.crypto_amount }}</td>
+              <td>${{ item.money }}</td>
+              <td>{{ item.datetime.slice(0, 10) }}</td>
+              <td>
+                <b>{{ item.action.toUpperCase() }}</b>
+              </td>
+              <td>
+                <button type="button" class="btn btn-danger me-1" :data-bs-target="'#exampleModal-' + index" data-bs-toggle="modal">Delete</button>
+                
+                <div class="modal fade" :id="'exampleModal-' + index" tabindex="-1" role="dialog" :aria-labelledby="'exampleModalLabel-' + index" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <h3><b>Are you sure?</b></h3>
+                      </div>
+                      <div class="modal-footer mx-5">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" @click="deleteTransaction(item._id)">Confirm</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
-            <tbody>
-                <tr v-for="(item, index) in state.historial.slice().reverse()" :key="index">
-                    <th scope="row">{{ item.crypto_code.toUpperCase() }}</th>
-                    <td>{{ item.crypto_amount }}</td>
-                    <td>${{ item.money }}</td>
-                    <td>{{ item.datetime.slice(0, 10) }}</td>
-                    <td>
-                        <b>{{ item.action.toUpperCase() }}</b>
-                    </td>
-                    <td>
-                        <button type="button" class="btn btn-danger me-1" :data-bs-target="'#exampleModal-' + index" data-bs-toggle="modal">Delete</button>
-                        
-                        <div class="modal fade" :id="'exampleModal-' + index" tabindex="-1" role="dialog" :aria-labelledby="'exampleModalLabel-' + index" aria-hidden="true">
-                        <div class="modal-dialog" role="document">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <h3><b>Are you sure?</b></h3>
-                            </div>
-                            <div class="modal-footer mx-5">
-                                <button type="button"  class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                <button type="button" class="btn btn-success" data-bs-dismiss="modal" @click="deleteTransaction(item._id)" >Confirm</button>
-                            </div>
-                            </div>
+                <button type="button" class="btn btn-primary" :data-bs-target="'#editModal-' + index" data-bs-toggle="modal" @click="editForm = { ...item }">Edit</button>
+                
+                <div class="modal fade" :id="'editModal-' + index" tabindex="-1" aria-labelledby="'exampleModalLabel-' + index" aria-hidden="true" >
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h3 class="modal-title" id="'exampleModalLabel-' + index">Purchase Details</h3>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <div class="form-group d-flex align-items-center justify-content-between">
+                          <label :for="'editCode-' + index">Coin:</label>
+                          <input v-model="editForm.crypto_code" type="text" class="form-control" :id="'editCode-' + index"/>
                         </div>
+                        <div class="form-group d-flex align-items-center justify-content-between">
+                          <label :for="'editAction-' + index">Action:</label>
+                          <select v-model="editForm.action" class="form-select" :id="'editAction-' + index">
+                            <option value="purchase">Purchase</option>
+                            <option value="sale">Sale</option>
+                          </select>
                         </div>
-
-                        <button type="button" class="btn btn-primary" :data-bs-target="'#editModal-' + index" data-bs-toggle="modal" >Edit </button>
-                        
-                        <div class="modal fade" :id="'editModal-' + index" tabindex="-1" aria-labelledby="'exampleModalLabel-' + index" aria-hidden="true" >
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h3 class="modal-title" id="'exampleModalLabel-' + index">
-                                Purchase Details
-                                </h3>
-                                
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="modal-body">
-                                   
-                                    <div class="form-group d-flex align-items-center justify-content-between">
-                                      <label :for="'editCode-' + index">Coin:</label>
-                                      <input v-model="item.crypto_code" type="text" class="form-control" :id="'editCode-' + index"/>
-                                    </div>
-                                     <div class="form-group d-flex align-items-center justify-content-between">
-                                    <label :for="'editAction-' + index">Action:</label>
-                                    <select v-model="item.action" class="form-select" :id="'editAction-' + index">
-                                      <option value="purchase">Purchase</option>
-                                      <option value="sale">Sale</option>
-                                    </select>
-                                  </div>
-                                    <div class="form-group d-flex align-items-center justify-content-between">
-                                      <label :for="'editAmount-' + index">Amount:</label>
-                                      <input v-model="item.crypto_amount" type="number" min="0" class="form-control" :id="'editAmount-' + index"/>
-                                    </div>
-                                    
-                                    <div class="form-group d-flex align-items-center justify-content-between">
-                                      <label :for="'editDate-' + index">Date:</label>
-                                      <input v-model="item.datetime" type="text" class="form-control" :id="'editDate-' + index"/>
-                                    </div>
-
-                                    <div class="form-group d-flex align-items-center justify-content-between">
-                                    <label :for="'editPrice-' + index">Money:</label>
-                                    <input v-model="item.money" type="number" min="0" class="form-control" :id="'editPrice-' + index"/>
-                                    </div>
-                                </div>
-
-                                <div class="modal-footer mx-5">
-                                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> Cancel </button>
-                                    <button type="button" class="btn btn-success" data-bs-dismiss="modal" @click="editTransaction(item._id, item.crypto_amount, item.money)">Confirm</button>
-                                </div>
-                            </div>
-
-                            </div>
+                        <div class="form-group d-flex align-items-center justify-content-between">
+                          <label :for="'editAmount-' + index">Amount:</label>
+                          <input v-model="editForm.crypto_amount" type="number" min="0" class="form-control" :id="'editAmount-' + index"/>
                         </div>
+                        <div class="form-group d-flex align-items-center justify-content-between">
+                          <label :for="'editDate-' + index">Date:</label>
+                          <input v-model="editForm.datetime" type="text" class="form-control disabled" :id="'editDate-' + index"/>
                         </div>
-                    </td>
-                </tr>
+                        <div class="form-group d-flex align-items-center justify-content-between">
+                          <label :for="'editPrice-' + index">Money:</label>
+                          <input v-model="editForm.money" type="number" min="0" class="form-control" :id="'editPrice-' + index"/>
+                        </div>
+                      </div>
+                      <div class="modal-footer mx-5">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"> Cancel </button>
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal" @click="editTransaction(item._id, editForm.crypto_code, editForm.action, editForm.crypto_amount, editForm.money)">Confirm</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -126,6 +115,7 @@ export default {
     });
 
     const loading = ref(false);
+    const editForm = ref({});
 
     const Historial = async () => {
       loading.value = true;
@@ -142,12 +132,14 @@ export default {
 
     const deleteTransaction = async (id) => {
       await laboApi.delete(id);
-       await Historial();
+      await Historial();
       console.log("eliminado");
     };
 
-    const editTransaction = async (id, newAmount, newPrice) => {
+    const editTransaction = async (id, newCode, newAction, newAmount, newPrice) => {
       const requestBody = {
+        crypto_code: newCode,
+        action: newAction,
         crypto_amount: newAmount,
         money: newPrice
       };
@@ -155,6 +147,7 @@ export default {
       try {
         await laboApi.edit(id, requestBody);
         console.log("edited successfully");
+        await Historial();
       } catch (err) {
         console.error(err);
       }
@@ -169,12 +162,14 @@ export default {
     return {
       state,
       loading,
+      editForm,
       editTransaction,
       deleteTransaction,
     };
   },
 };
 </script>
+
 <style scoped>
 input, select{
   width: 50%;
