@@ -140,6 +140,7 @@ export default {
           legend: {
            display: false,
           },
+<<<<<<< HEAD
           tooltip: {
             callbacks: {
               label: function(context) {
@@ -149,9 +150,20 @@ export default {
                 const formattedValue = value !== undefined ? `$${value.toFixed(2)}` : '$0.00';
                return `${label}: ${formattedValue}`;
               },
+=======
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const crypto = cryptocurrencies.value[context.dataIndex];
+              const label = context.datasetIndex === 0 ? 'Money' : 'Amount';
+              const value = context.datasetIndex === 0 ? crypto.money : crypto.amount;
+              const formattedValue = value !== undefined ? `$${value.toFixed(2)}` : '$0.00';
+              return `${label}: ${formattedValue}`;
+>>>>>>> current-state
             },
           },
 
+        },
         },
       },
     });
