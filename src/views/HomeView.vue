@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import { computed, onMounted, reactive, ref } from 'vue';
+import { computed, onMounted, reactive } from 'vue';
 import cryptoyaApi from '../services/criptoyaApi';
 import store from '@/store/index';
 import navbar from '../components/NavBar.vue';
@@ -97,7 +97,6 @@ export default {
     navbar,
   },
   setup() {
-    let isLoading = ref(false);
     const user = computed(() => store.state.id);
     let availableFunds = computed(() => store.state.availableFunds);
     const state = reactive({
@@ -107,21 +106,24 @@ export default {
       sol: {},
     });
 
-    const GetPrice = async () => {
-      const btcResponse = await cryptoyaApi.getBTC();
-      const ethResponse = await cryptoyaApi.getETH();
-      const usdcResponse = await cryptoyaApi.getUSDC();
-      const solResponse = await cryptoyaApi.getSOL();
-      console.log('Los datos del BTC son:', usdcResponse.data);
-      state.btc = btcResponse.data;
-      state.eth = ethResponse.data;
-      state.usdc = usdcResponse.data;
-      state.sol = solResponse.data;
+    const getPrice = async () => {
+      try {
+        const btcResponse = await cryptoyaApi.getBTC();
+        const ethResponse = await cryptoyaApi.getETH();
+        const usdcResponse = await cryptoyaApi.getUSDC();
+        const solResponse = await cryptoyaApi.getSOL();
+
+        state.btc = btcResponse.data;
+        state.eth = ethResponse.data;
+        state.usdc = usdcResponse.data;
+        state.sol = solResponse.data;
+      } catch (error) {
+        console.error('Error al obtener precios:', error);
+      }
     };
 
     onMounted(async () => {
-      isLoading.value = true;
-      await GetPrice();
+      await getPrice();
     });
 
     const response = computed(() => {
@@ -134,12 +136,11 @@ export default {
     });
 
     return {
-      isLoading,
       user,
       state,
       availableFunds,
       response,
-      GetPrice,
+      getPrice,
     };
   },
 };

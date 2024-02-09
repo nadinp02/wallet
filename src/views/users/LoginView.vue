@@ -2,8 +2,8 @@
     <form>
         <div class="container">
         <p>Welcome!</p>
-            <input type="text" id="form2Example1" class="form-control" v-model="username" placeholder="Username..."/>
-            <input type="password" id="form2Example2" class="form-control" v-model="password" placeholder="Password..."/>
+            <input type="text" id="loginUser" class="form-control" v-model="username" placeholder="Username..."/>
+            <input type="password" id="loginPassword" class="form-control" v-model="password" placeholder="Password..."/>
 
             <button v-show=" username == storedUsername && password == storedPassword" type="button"
             class="btn btn-primary btn-block mb-4" @click="login">Log in</button>
@@ -53,8 +53,10 @@ export default {
     padding: 25px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #f7f7f7;
-    margin-top: 130px
+    margin-top: 130px;
+     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+     background: linear-gradient(90deg, #ffffff, #f8f8f8);
+
   }
 
   form label {

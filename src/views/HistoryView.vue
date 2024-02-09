@@ -21,7 +21,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in state.historial.slice().reverse()" :key="index">
+            <tr v-for="(item, index) in state.historial" :key="index">
               <th scope="row">{{ item.crypto_code.toUpperCase() }}</th>
               <td>{{ item.crypto_amount }}</td>
               <td>${{ item.money }}</td>
@@ -60,8 +60,14 @@
                       </div>
                       <div class="modal-body">
                         <div class="form-group d-flex align-items-center justify-content-between">
-                          <label :for="'editCode-' + index">Coin:</label>
-                          <input v-model="editForm.crypto_code" type="text" class="form-control" :id="'editCode-' + index"/>
+                          <label :for="'editCode-' + index">Coin: </label>
+                          <select v-model="editForm.crypto_code" class="form-select" :id="'editCode-' + index">
+                            <option :value="item.crypto_code"> {{ item.crypto_code.toUpperCase() }} </option>
+                            <option value="usdc">USDC</option>
+                            <option value="btc">BTC</option>
+                            <option value="eth">ETH</option>
+                            <option value="sol">SOL</option>
+                          </select>
                         </div>
                         <div class="form-group d-flex align-items-center justify-content-between">
                           <label :for="'editAction-' + index">Action:</label>
@@ -76,7 +82,7 @@
                         </div>
                         <div class="form-group d-flex align-items-center justify-content-between">
                           <label :for="'editDate-' + index">Date:</label>
-                          <input v-model="editForm.datetime" type="text" class="form-control disabled" :id="'editDate-' + index"/>
+                          <input v-model="editForm.datetime" type="text" disabled class="form-control disabled" :id="'editDate-' + index"/>
                         </div>
                         <div class="form-group d-flex align-items-center justify-content-between">
                           <label :for="'editPrice-' + index">Money:</label>
@@ -121,10 +127,10 @@ export default {
       loading.value = true;
       try {
         const response = await laboApi.getHistorial();
-        console.log(response.data);
+        // console.log(response.data);
         state.historial = response.data;
       } catch (err) {
-        console.error(err);
+        // console.error(err);
       } finally {
         loading.value = false;
       }
@@ -133,7 +139,7 @@ export default {
     const deleteTransaction = async (id) => {
       await laboApi.delete(id);
       await Historial();
-      console.log("eliminado");
+      // console.log("eliminado");
     };
 
     const editTransaction = async (id, newCode, newAction, newAmount, newPrice) => {
@@ -146,10 +152,10 @@ export default {
 
       try {
         await laboApi.edit(id, requestBody);
-        console.log("edited successfully");
+        // console.log("edited successfully");
         await Historial();
       } catch (err) {
-        console.error(err);
+        // console.error(err);
       }
     };
 
@@ -158,6 +164,7 @@ export default {
       await Historial();
       loading.value = false;
     });
+    
 
     return {
       state,

@@ -53,20 +53,32 @@ export default {
         const usdcPrice = usdcPriceResponse.data.ask;
         const solPrice = solPriceResponse.data.ask;
 
-        const calculatedCryptos = transactions.map(transaction => {
-          const moneySpent = parseFloat(transaction.money);
-          const amount = parseFloat(transaction.crypto_amount);
+        const calculatedResults = {};
 
-          const currentPrice = getCurrentPrice(transaction.crypto_code, btcPrice, ethPrice, usdcPrice, solPrice);
+        transactions.forEach(transaction => {
+          if (transaction.action === 'purchase') {
+            const purchasePrice = parseFloat(transaction.money);
+            const currentPrice = getCurrentPrice(transaction.crypto_code, btcPrice, ethPrice, usdcPrice, solPrice);
+            if (calculatedResults[transaction.crypto_code] === undefined) {
+              calculatedResults[transaction.crypto_code] = 0;
+            }
+            const saleTransaction = transactions.find(t => t.action === 'sale' && t.crypto_code === transaction.crypto_code);
+            console.log(saleTransaction);
+            if (saleTransaction) {
+              const salePrice = parseFloat(saleTransaction.money);
+              const result = salePrice - purchasePrice;
+              calculatedResults[transaction.crypto_code] += result * currentPrice;
+            } else {
+              calculatedResults[transaction.crypto_code] -= purchasePrice;
+            }
+          }
+        });
 
-          const result = transaction.action === 'purchase'
-            ? currentPrice * amount - moneySpent
-            : moneySpent - currentPrice * amount;
-
+        const calculatedCryptos = Object.keys(calculatedResults).map(cryptoCode => {
           return {
-            code: transaction.crypto_code,
-            name: getCryptoName(transaction.crypto_code),
-            result,
+            code: cryptoCode,
+            name: getCryptoName(cryptoCode),
+            result: calculatedResults[cryptoCode],
           };
         });
 
@@ -117,6 +129,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+</style>
 
 
 <style scoped>

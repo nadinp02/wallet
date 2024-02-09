@@ -5,10 +5,10 @@ export default createStore({
     id: localStorage.getItem('id'),
     password: localStorage.getItem('password'),
     availableFunds: localStorage.getItem('money'),
-    btcamount : localStorage.getItem('btc'),
-    usdcamount: localStorage.getItem('usdc'),
-    ethamount: localStorage.getItem('eth'),
-    solamount: localStorage.getItem('sol')
+    btcAmount : localStorage.getItem('btc'),
+    usdcAmount: localStorage.getItem('usdc'),
+    ethAmount: localStorage.getItem('eth'),
+    solAmount: localStorage.getItem('sol')
   },
   mutations: {
     setId(state, id) {
@@ -19,25 +19,25 @@ export default createStore({
       state.password = password;
       localStorage.setItem('password',password)
     },
-    setAvailableFunds: (state, funds) => {
+    setAvailableFunds(state, funds) {
       state.availableFunds = funds;
       localStorage.setItem('money', funds);
     },
-    setBTC(state, btcamount){
-      state.btcamount = btcamount;
-      localStorage.setItem('btc',btcamount)
+    setBTC(state, btcAmount){
+      state.btcAmount = btcAmount;
+      localStorage.setItem('btc',btcAmount)
     },
-    setETH(state,ethamount){
-      state.ethamount = ethamount;
-      localStorage.setItem('eth',ethamount)
+    setETH(state,ethAmount){
+      state.ethAmount = ethAmount;
+      localStorage.setItem('eth',ethAmount)
     },
-    setUSDC(state, usdcamount){
-      state.usdcamount = usdcamount;
-      localStorage.setItem('usdc',usdcamount)
+    setUSDC(state, usdcAmount){
+      state.usdcAmount = usdcAmount;
+      localStorage.setItem('usdc',usdcAmount)
     },
-    setSOL(state, solamount){
-      state.solamount = solamount;
-      localStorage.setItem('sol',solamount)
+    setSOL(state, solAmount){
+      state.solAmount = solAmount;
+      localStorage.setItem('sol',solAmount)
     }
   },
   actions: {

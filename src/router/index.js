@@ -3,13 +3,10 @@ import store from '@/store/index.js';
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/users/LoginView.vue'
 import RegisterView from '../views/users/RegisterView.vue'
-import PurchaseView from '../views/PurchaseView.vue'
-import SellView from '../views/SellingView.vue'
 import HistoryView from '../views/HistoryView.vue'
 import CurrentStateView from '../views/CurrentStateView.vue'
 import InvestmentView from '../views/InvestmentView.vue'
-
-
+import TradeView from '../views/TradeView.vue'
 
 const routes = [
   {
@@ -29,21 +26,9 @@ const routes = [
     meta: { protectedView: true }
   },
   {
-    path: '/purchase',
-    name: 'Purchase',
-    component: PurchaseView,
-    meta: { protectedView: true }
-  },
-  {
-    path: '/sell',
-    name: 'Sell',
-    component: SellView,
-    meta: { protectedView: true }
-  },
-  {
-    path: '/sell',
-    name: 'Sell',
-    component: SellView,
+    path: '/trade',
+    name: 'Trade',
+    component: TradeView,
     meta: { protectedView: true }
   },
   {
@@ -63,7 +48,7 @@ const routes = [
     name: 'Investment Analysis',
     component: InvestmentView,
     meta: { protectedView: true }
-  }
+  },
 ]
 
 const router = createRouter({

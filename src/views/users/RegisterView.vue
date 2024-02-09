@@ -1,74 +1,79 @@
 <template>
-    <form>
-        <div class="container">
-        <p>If you are new you will receive <b>$100,000!</b></p>
-        <input type="text" id="form2Example1" class="form-control" v-model="email" placeholder="Email..."/>
-        <input type="email" id="form2Example2" class="form-control" v-model="username" placeholder="Username..."/>
-        <input type="password" id="form2Example3" class="form-control" v-model="confirmedPassword"  placeholder="Password..." />
-        <input type="password" id="form2Example3" class="form-control" v-model="password" placeholder="Repeat password..."/>
-         <div class="alert alert-danger fade show" role="alert" v-if="confirmedPassword != password" >
-            <strong>Password don't match</strong> 
-          </div>
-          <div class="mb-3 mt-3" v-else>
-            <button type="button" class="btn" @click="register">Sing up</button>
-          </div >
-        <p>Have an account?<router-link to=/>Log in</router-link></p>
-            
-        </div>
-    </form>
+  <form>
+    <div class="container">
+      <p>If you are new, you will receive <b>$100,000!</b></p>
+
+      <input type="text" id="registerEmail" class="form-control" v-model="email" placeholder="Email..." />
+      <input type="email" id="registerUser" class="form-control" v-model="username" placeholder="Username..." />
+      <input type="password" id="registerPassword" class="form-control" v-model="confirmedPassword" placeholder="Password..." />
+      <input type="password" id="registerPassword2" class="form-control" v-model="password" placeholder="Repeat password..." />
+
+      <div class="alert alert-danger fade show" role="alert" v-if="confirmedPassword !== password">
+        <strong>Passwords don't match</strong>
+      </div>
+
+      <div class="alert alert-danger fade show" role="alert" v-else-if="password.length > 0 && password.length < 8">
+        <strong>Password must be at least 8 characters</strong>
+      </div>
+
+      <div class="mb-3 mt-3" v-else>
+        <button type="button" class="btn" @click="register">Sign up</button>
+      </div>
+
+      <p>Have an account? <router-link to="/">Log in</router-link></p>
+    </div>
+  </form>
 </template>
 
 
-<script>
 
+<script>
 import { useStore } from 'vuex';
-import {ref} from 'vue'
+import { ref } from 'vue';
 import router from '@/router';
 
-export default{
-  setup(){
-      const store = useStore();
-      let availableFunds = ref(100000);
-      const email = ref('');
-      const username = ref('');
-      const password = ref('');
-      const confirmedPassword = ref('');
-      let btcamount = ref(0);
-      let ethamount = ref(0);
-      let usdcamount = ref(0);
-      const isRegistered = ref(false);
+export default {
+  setup() {
+    const store = useStore();
+    const email = ref('');
+    const username = ref('');
+    const password = ref('');
+    const confirmedPassword = ref('');
+    let availableFunds = ref(100000);
 
-      const register = () => {
-        if(email.value == '' || username.value == '' || password.value == '' || confirmedPassword.value == '' ){
-          console.log('no pueden quedar datos vacios')
-        }else{
-          if(password.value != confirmedPassword.value){
-            console.log('las contraseñas no coinciden')
+   const register = () => {
+      if (email.value === '' || username.value === '' || password.value === '' || confirmedPassword.value === '') {
+        console.log('No pueden quedar datos vacíos');
+      } else {
+        if (password.value !== confirmedPassword.value) {
+          console.log('Las contraseñas no coinciden');
+        } else if (password.value.length < 8) {
+          console.log('La contraseña debe tener al menos 8 caracteres');
+        } else {
+          store.commit('setId', username.value);
+          store.commit('setPassword', password.value);
+          store.commit('setAvailableFunds', availableFunds.value);
+          store.commit('setBTC', 0);
+          store.commit('setETH', 0);
+          store.commit('setUSDC', 0);
 
-          }else{
-            store.commit('setId',username.value);
-            store.commit('setPassword',password.value)
-            store.commit('setAvailableFunds',availableFunds.value)
-            store.commit('setBTC',btcamount.value)
-            store.commit('setETH',ethamount.value)
-            store.commit('setUSDC',usdcamount.value)
-            console.log('Logged in:', store.state.id);
-            router.push('/home')
-            isRegistered.value = true;
-          }
+          console.log('Logged in:', store.state.id);
+          router.push('/home');
         }
       }
-      return{
-          email,
-          username,
-          password,
-          confirmedPassword,
-          isRegistered,
-          register
-      }   
-  }
-}
+    };
+
+    return {
+      email,
+      username,
+      password,
+      confirmedPassword,
+      register,
+    };
+  },
+};
 </script>
+
 
 <style scoped>
   form {
@@ -77,8 +82,10 @@ export default{
     padding: 50px;
     border: 1px solid #ccc;
     border-radius: 8px;
-    background-color: #f7f7f7;
-    margin-top: 130px
+    margin-top: 130px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    background: linear-gradient(90deg, #ffffff, #f8f8f8);
+
   }
 
   form label {
