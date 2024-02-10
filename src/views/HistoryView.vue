@@ -21,7 +21,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(item, index) in state.historial" :key="index">
+            <tr v-for="(item, index) in state.historial.slice().reverse()" :key="index">
               <th scope="row">{{ item.crypto_code.toUpperCase() }}</th>
               <td>{{ item.crypto_amount }}</td>
               <td>${{ item.money }}</td>
@@ -62,12 +62,12 @@
                         <div class="form-group d-flex align-items-center justify-content-between">
                           <label :for="'editCode-' + index">Coin: </label>
                           <select v-model="editForm.crypto_code" class="form-select" :id="'editCode-' + index">
-                            <option :value="item.crypto_code"> {{ item.crypto_code.toUpperCase() }} </option>
-                            <option value="usdc">USDC</option>
-                            <option value="btc">BTC</option>
-                            <option value="eth">ETH</option>
-                            <option value="sol">SOL</option>
-                          </select>
+                          <option :value="item.crypto_code">{{ item.crypto_code.toUpperCase() }}</option>
+                          <option value="usdc" v-if="item.crypto_code !== 'usdc'">USDC</option>
+                          <option value="btc" v-if="item.crypto_code !== 'btc'">BTC</option>
+                          <option value="eth" v-if="item.crypto_code !== 'eth'">ETH</option>
+                          <option value="sol" v-if="item.crypto_code !== 'sol'">SOL</option>
+                        </select>
                         </div>
                         <div class="form-group d-flex align-items-center justify-content-between">
                           <label :for="'editAction-' + index">Action:</label>
@@ -129,17 +129,20 @@ export default {
         const response = await laboApi.getHistorial();
         // console.log(response.data);
         state.historial = response.data;
-      } catch (err) {
-        // console.error(err);
+      } catch (e) {
+        console.error(e);
       } finally {
         loading.value = false;
       }
     };
 
     const deleteTransaction = async (id) => {
+      try{
       await laboApi.delete(id);
       await Historial();
-      // console.log("eliminado");
+      } catch(e){
+        console.error(e)
+      }
     };
 
     const editTransaction = async (id, newCode, newAction, newAmount, newPrice) => {
@@ -152,10 +155,9 @@ export default {
 
       try {
         await laboApi.edit(id, requestBody);
-        // console.log("edited successfully");
         await Historial();
-      } catch (err) {
-        // console.error(err);
+      } catch (e) {
+        console.error(e);
       }
     };
 

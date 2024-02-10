@@ -5,9 +5,9 @@
       <div class="row">
         <div class="col-sm-12 col-lg-6">
           <div class="text-center">
-            <h3 class="m-3">Current Funds: <b>${{ totalAmount.toFixed(2) }}</b></h3>
+            <h3 class="m-3"> Current Funds: <strong>${{ parseFloat(availableFunds).toFixed(2) }}</strong></h3>
             <h4 v-for="crypto in cryptocurrencies" :key="crypto.code">
-              {{ crypto.name }}: <b>${{ crypto.money.toFixed(2) }}</b> - Amount: <b>{{ crypto.amount.toFixed(2) }}</b>
+              {{ crypto.name }}: <b>${{ crypto.money.toFixed(2) }}</b> - Amount: <b>{{ crypto.amount }}</b>
             </h4>
           </div>
         </div>
@@ -35,7 +35,7 @@
 import { ref, onMounted } from 'vue';
 import navbar from "@/components/NavBar.vue";
 import Chart from 'chart.js/auto';
-import { useStore } from 'vuex';
+import store from "@/store/index";
 import criptoyaApi from '../services/criptoyaApi';
 import laboApi from "@/services/labo";
 
@@ -44,28 +44,27 @@ export default {
     navbar,
   },
   setup() {
-    const store = useStore();
-
+    const availableFunds = store.state.availableFunds;
     const cryptocurrencies = ref([]);
-    const totalAmount = ref(0);
 
     const fetchData = async () => {
       try {
         const transactionsResponse = await laboApi.getHistorial();
         const transactions = transactionsResponse.data;
+        const cryptoAmounts = {
+          btc: 0,
+          eth: 0,
+          usdc: 0,
+          sol: 0,
+        };
 
-        const calculatedBTC = transactions
-          .filter(t => t.crypto_code === 'btc')
-          .reduce((acc, t) => acc + parseFloat(t.crypto_amount), 0);
-        const calculatedETH = transactions
-          .filter(t => t.crypto_code === 'eth')
-          .reduce((acc, t) => acc + parseFloat(t.crypto_amount), 0);
-        const calculatedUSDC = transactions
-          .filter(t => t.crypto_code === 'usdc')
-          .reduce((acc, t) => acc + parseFloat(t.crypto_amount), 0);
-        const calculatedSOL = transactions
-          .filter(t => t.crypto_code === 'sol')
-          .reduce((acc, t) => acc + parseFloat(t.crypto_amount), 0);
+        transactions.forEach(transaction => {
+          if (transaction.action === 'purchase') {
+            cryptoAmounts[transaction.crypto_code] += parseFloat(transaction.crypto_amount);
+          } else if (transaction.action === 'sale') {
+            cryptoAmounts[transaction.crypto_code] -= parseFloat(transaction.crypto_amount);
+          }
+        });
 
         const [btcPriceResponse, ethPriceResponse, usdcPriceResponse, solPriceResponse] = await Promise.all([
           criptoyaApi.getBTC(),
@@ -80,15 +79,13 @@ export default {
         const solPrice = solPriceResponse.data.ask;
 
         const calculatedCryptos = [
-          { code: 'btc', name: 'Bitcoin', amount: calculatedBTC, money: calculatedBTC * btcPrice },
-          { code: 'eth', name: 'Ethereum', amount: calculatedETH, money: calculatedETH * ethPrice },
-          { code: 'usdc', name: 'USDC', amount: calculatedUSDC, money: calculatedUSDC * usdcPrice },
-          { code: 'sol', name: 'SOL', amount: calculatedSOL, money: calculatedSOL * solPrice },
+          { code: 'btc', name: 'Bitcoin', amount: cryptoAmounts['btc'], money: cryptoAmounts['btc'] * btcPrice },
+          { code: 'eth', name: 'Ethereum', amount: cryptoAmounts['eth'], money: cryptoAmounts['eth'] * ethPrice },
+          { code: 'usdc', name: 'USDC', amount: cryptoAmounts['usdc'], money: cryptoAmounts['usdc'] * usdcPrice },
+          { code: 'sol', name: 'SOL', amount: cryptoAmounts['sol'], money: cryptoAmounts['sol'] * solPrice },
         ];
 
         cryptocurrencies.value = calculatedCryptos;
-
-        totalAmount.value = calculatedBTC * btcPrice + calculatedETH * ethPrice + calculatedUSDC * usdcPrice + calculatedSOL * solPrice;
       } catch (error) {
         console.error(error);
       }
@@ -98,14 +95,6 @@ export default {
 
     onMounted(async () => {
       await fetchData();
-
-      // Actualizar el estado global con los nuevos valores
-      store.commit('setBTC', cryptocurrencies.value.find(crypto => crypto.code === 'btc').amount);
-      store.commit('setETH', cryptocurrencies.value.find(crypto => crypto.code === 'eth').amount);
-      store.commit('setUSDC', cryptocurrencies.value.find(crypto => crypto.code === 'usdc').amount);
-      store.commit('setSOL', cryptocurrencies.value.find(crypto => crypto.code === 'sol').amount);
-      store.commit('setAvailableFunds', totalAmount.value);
-
       const ctx = chartCanvas.value ? chartCanvas.value.getContext('2d') : null;
       new Chart(ctx, {
       type: 'bar',
@@ -160,7 +149,7 @@ export default {
     return {
       chartCanvas,
       cryptocurrencies,
-      totalAmount,
+      availableFunds,
     };
   },
 };

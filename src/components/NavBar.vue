@@ -13,10 +13,8 @@
           <ul class="navbar-nav ms-3">
            <router-link to="/home"><li class="nav-item"><a class="nav-link"
             href="#">Home</a></li></router-link>
-            <router-link to="/purchase"><li class="nav-item"><a class="nav-link"
-            href="#">Purchase</a></li></router-link>
-            <router-link to="/sell"><li class="nav-item"><a class="nav-link"
-            href="#">Sell</a></li></router-link>
+            <router-link to="/trade"><li class="nav-item"><a class="nav-link"
+            href="#">Trade</a></li></router-link>
             <router-link to="/history"><li class="nav-item"><a class="nav-link"
             href="#">History</a></li></router-link>
             <router-link to="/current-state"><li class="nav-item"><a class="nav-link"
