@@ -6,7 +6,7 @@
     </h4>
     <div class="row">
       <form>
-        <div class="d-flex align-items-center justify-content-between">
+        <div class="inputs d-flex align-items-center justify-content-between">
           <div>
             <p><b>Choose the cryptocurrency</b></p>
             <select id="coin" v-model="selectedCrypto" class="select w-100">
@@ -288,5 +288,14 @@ export default {
 
 .btn:hover {
   background: linear-gradient(60deg, rgb(82, 67, 170), rgb(237, 80, 180)) 0% 0% / auto repeat scroll padding-box border-box rgb(82, 67, 170);
+}
+
+@media screen and (max-width: 768px){
+  .inputs{
+    display: block !important;
+  }
+  select, input{
+    width: 100%;
+  }
 }
 </style>

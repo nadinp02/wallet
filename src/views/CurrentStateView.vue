@@ -36,7 +36,7 @@ import { ref, onMounted } from 'vue';
 import navbar from "@/components/NavBar.vue";
 import Chart from 'chart.js/auto';
 import store from "@/store/index";
-import criptoyaApi from '../services/criptoyaApi';
+import criptoyaApi from '@/services/criptoyaApi';
 import laboApi from "@/services/labo";
 
 export default {

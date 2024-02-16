@@ -12,7 +12,7 @@
         <table v-if="state.historial != null" class="table table-bordered table-hover">
           <thead>
             <tr>
-              <th scope="col">Coin</th>
+              <th scope="col">Cryptocurrency</th>
               <th scope="col">Amount</th>
               <th scope="col">Money</th>
               <th scope="col">Date</th>
@@ -55,12 +55,12 @@
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h3 class="modal-title" id="'exampleModalLabel-' + index">Purchase Details</h3>
+                        <h3 class="modal-title" id="'exampleModalLabel-' + index">Details</h3>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                       </div>
                       <div class="modal-body">
                         <div class="form-group d-flex align-items-center justify-content-between">
-                          <label :for="'editCode-' + index">Coin: </label>
+                          <label :for="'editCode-' + index">Cryptocurrency: </label>
                           <select v-model="editForm.crypto_code" class="form-select" :id="'editCode-' + index">
                           <option :value="item.crypto_code">{{ item.crypto_code.toUpperCase() }}</option>
                           <option value="usdc" v-if="item.crypto_code !== 'usdc'">USDC</option>
@@ -70,7 +70,7 @@
                         </select>
                         </div>
                         <div class="form-group d-flex align-items-center justify-content-between">
-                          <label :for="'editAction-' + index">Action:</label>
+                          <label :for="'editAction-' + index">Movement:</label>
                           <select v-model="editForm.action" class="form-select" :id="'editAction-' + index">
                             <option value="purchase">Purchase</option>
                             <option value="sale">Sale</option>
@@ -81,12 +81,12 @@
                           <input v-model="editForm.crypto_amount" type="number" min="0" class="form-control" :id="'editAmount-' + index"/>
                         </div>
                         <div class="form-group d-flex align-items-center justify-content-between">
-                          <label :for="'editDate-' + index">Date:</label>
-                          <input v-model="editForm.datetime" type="text" disabled class="form-control disabled" :id="'editDate-' + index"/>
-                        </div>
-                        <div class="form-group d-flex align-items-center justify-content-between">
                           <label :for="'editPrice-' + index">Money:</label>
                           <input v-model="editForm.money" type="number" min="0" class="form-control" :id="'editPrice-' + index"/>
+                        </div>
+                          <div class="form-group d-flex align-items-center justify-content-between">
+                          <label :for="'editDate-' + index">Date:</label>
+                          <input v-model="editForm.datetime" type="text" disabled class="form-control disabled" :id="'editDate-' + index"/>
                         </div>
                       </div>
                       <div class="modal-footer mx-5">

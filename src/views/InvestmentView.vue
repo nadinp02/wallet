@@ -12,9 +12,14 @@
         </thead>
         <tbody>
           <tr v-for="crypto in cryptocurrencies" :key="crypto.code">
-            <td>{{ crypto.name }}</td>
-            <td :class="{ 'text-success': crypto.result >= 0, 'text-danger': crypto.result < 0 }">
-              {{ crypto.result.toFixed(2) }}
+            <td>{{ crypto.code.toUpperCase() }}</td>
+            <td
+              :class="{
+                'text-success': crypto.result >= 0,
+                'text-danger': crypto.result < 0,
+              }"
+            >
+              {{ crypto.result }}
             </td>
           </tr>
         </tbody>
@@ -24,10 +29,10 @@
 </template>
 
 <script>
-import navbar from '../components/NavBar.vue';
+import navbar from "../components/NavBar.vue";
 import criptoyaApi from "@/services/criptoyaApi";
 import laboApi from "@/services/labo";
-import { ref, onMounted } from 'vue';
+import { ref, onMounted } from "vue";
 
 export default {
   components: {
@@ -35,87 +40,82 @@ export default {
   },
   setup() {
     const cryptocurrencies = ref([]);
-
     const fetchInvestmentResults = async () => {
       try {
         const transactionsResponse = await laboApi.getHistorial();
         const transactions = transactionsResponse.data;
-
-        const [btcPriceResponse, ethPriceResponse, usdcPriceResponse, solPriceResponse] = await Promise.all([
+        // console.log(transactions);
+        const [btcPriceResponse,ethPriceResponse,usdcPriceResponse,solPriceResponse,] = await Promise.all([
           criptoyaApi.getBTC(),
           criptoyaApi.getETH(),
           criptoyaApi.getUSDC(),
           criptoyaApi.getSOL(),
         ]);
 
-        const btcPrice = btcPriceResponse.data.ask;
-        const ethPrice = ethPriceResponse.data.ask;
-        const usdcPrice = usdcPriceResponse.data.ask;
-        const solPrice = solPriceResponse.data.ask;
-
         const calculatedResults = {};
 
-        transactions.forEach(transaction => {
-          if (transaction.action === 'purchase') {
-            const purchasePrice = parseFloat(transaction.money);
-            const currentPrice = getCurrentPrice(transaction.crypto_code, btcPrice, ethPrice, usdcPrice, solPrice);
-            if (calculatedResults[transaction.crypto_code] === undefined) {
-              calculatedResults[transaction.crypto_code] = 0;
-            }
-            const saleTransaction = transactions.find(t => t.action === 'sale' && t.crypto_code === transaction.crypto_code);
-            console.log(saleTransaction);
-            if (saleTransaction) {
-              const salePrice = parseFloat(saleTransaction.money);
-              const result = salePrice - purchasePrice;
-              calculatedResults[transaction.crypto_code] += result * currentPrice;
-            } else {
-              calculatedResults[transaction.crypto_code] -= purchasePrice;
-            }
+        transactions.forEach((transaction) => {
+          if (!calculatedResults[transaction.crypto_code]) {
+            calculatedResults[transaction.crypto_code] = {
+              totalAmount: 0,
+              totalPurchaseMoney: 0,
+              totalSaleMoney: 0,
+              hasSale: false,
+            };
+          }
+
+          if (transaction.action === "purchase") {
+            calculatedResults[transaction.crypto_code].totalAmount += parseFloat(
+              transaction.crypto_amount
+            );
+            calculatedResults[transaction.crypto_code].totalPurchaseMoney += parseFloat(
+              transaction.money
+            );
+          } else if (transaction.action === "sale") {
+            calculatedResults[transaction.crypto_code].hasSale = true;
+            calculatedResults[transaction.crypto_code].totalSaleMoney += parseFloat(
+              transaction.money
+            );
           }
         });
 
-        const calculatedCryptos = Object.keys(calculatedResults).map(cryptoCode => {
+        //nuevo arreglo de objetos con los resultados finales
+        const calculatedCryptos = Object.keys(calculatedResults).map((cryptoCode) => {
+          const {totalAmount,totalPurchaseMoney,totalSaleMoney,hasSale,} = calculatedResults[cryptoCode];
+          let currentPrice = 0;
+          switch (cryptoCode) {
+            case "btc":
+              currentPrice = btcPriceResponse.data.ask;
+              break;
+            case "eth":
+              currentPrice = ethPriceResponse.data.ask;
+              break;
+            case "usdc":
+              currentPrice = usdcPriceResponse.data.ask;
+              break;
+            case "sol":
+              currentPrice = solPriceResponse.data.ask;
+              break;
+            default:
+              break;
+          }
+
+          let result = 0;
+          if (hasSale) {
+            result = totalSaleMoney - totalPurchaseMoney;
+          } else {
+            result = (currentPrice * totalAmount) - totalPurchaseMoney;
+          }
+
           return {
             code: cryptoCode,
-            name: getCryptoName(cryptoCode),
-            result: calculatedResults[cryptoCode],
+            result: result,
           };
         });
 
         cryptocurrencies.value = calculatedCryptos;
-
       } catch (error) {
         console.error(error);
-      }
-    };
-
-    const getCurrentPrice = (cryptoCode, btcPrice, ethPrice, usdcPrice, solPrice) => {
-      switch (cryptoCode) {
-        case 'btc':
-          return btcPrice;
-        case 'eth':
-          return ethPrice;
-        case 'usdc':
-          return usdcPrice;
-        case 'sol':
-          return solPrice;
-        default:
-          return 0;
-      }
-    };
-
-    const getCryptoName = (cryptoCode) => {
-      switch (cryptoCode) {
-        case 'btc':
-          return 'Bitcoin';
-        case 'eth':
-          return 'Ethereum';
-        case 'usdc':
-          return 'USDC';
-        case 'sol':
-          return 'SOL';
-        default:
-          return '';
       }
     };
 
@@ -129,10 +129,6 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>
-
 
 <style scoped>
 </style>
