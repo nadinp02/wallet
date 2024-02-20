@@ -135,7 +135,7 @@ export default {
               const crypto = cryptocurrencies.value[context.dataIndex];
               const label = context.datasetIndex === 0 ? 'Money' : 'Amount';
               const value = context.datasetIndex === 0 ? crypto.money : crypto.amount;
-              const formattedValue = value !== undefined ? `$${value.toFixed(2)}` : '$0.00';
+              const formattedValue = value !== undefined ? `$${value}` : '$0.00';
               return `${label}: ${formattedValue}`;
             },
           },

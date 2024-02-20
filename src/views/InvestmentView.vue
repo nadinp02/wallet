@@ -19,7 +19,7 @@
                 'text-danger': crypto.result < 0,
               }"
             >
-              {{ crypto.result }}
+              {{ crypto.result.toFixed(2) }}
             </td>
           </tr>
         </tbody>
